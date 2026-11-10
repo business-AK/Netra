@@ -1,0 +1,80 @@
+# ==============================================================================
+# Netra Multimodal VideoRAG - Git Ignore Configuration
+# ==============================================================================
+
+# --- Environment & Credentials ---
+.env
+.env*.local
+*.env
+!*.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- Database & Storage ---
+*.db
+*.sqlite
+*.sqlite3
+backend/storage/videos/*
+!backend/storage/videos/.gitkeep
+backend/storage/frames/*
+!backend/storage/frames/.gitkeep
+backend/storage/audio/*
+!backend/storage/audio/.gitkeep
+backend/storage/indexes/*
+!backend/storage/indexes/.gitkeep
+backend/storage/*.db
+backend/storage/*.sqlite
+backend/.env
+# --- Test Artifacts & Synthetic Samples ---
+tests/samples/*.mp4
+tests/samples/*.wav
+tests/samples/*.jpg
+
+# --- Node / Frontend ---
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Operating System & IDEs ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.swp
+*.swo
+

@@ -1,0 +1,36 @@
+# Environment variables
+.env
+*.env
+!.env.example
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Dynamic Video Processing Storage
+storage/videos/*
+!storage/videos/.gitkeep
+storage/frames/*
+!storage/frames/.gitkeep
+storage/audio/*
+!storage/audio/.gitkeep
+storage/indexes/*
+!storage/indexes/.gitkeep
+storage/*.db
+storage/*.sqlite
+
+# Logs & temp
+*.log
+tmp/
+
