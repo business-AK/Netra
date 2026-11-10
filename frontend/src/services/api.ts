@@ -4,7 +4,7 @@ import { ChatResponseData, VLMSettings } from '../types/chat';
 
 const client = axios.create({
   baseURL: '',
-  timeout: 60000,
+  timeout: 180000, // 3 minutes timeout for cold-loading large 7B-11B models into GPU/RAM
 });
 
 export const api = {

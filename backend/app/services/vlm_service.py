@@ -199,7 +199,8 @@ class VLMService:
         }
 
         try:
-            async with httpx.AsyncClient(timeout=45.0) as client:
+            # 180s timeout: loading a 6-9GB model into VRAM/RAM on the first query can take 30-90s
+            async with httpx.AsyncClient(timeout=180.0) as client:
                 res = await client.post(url, json=payload)
                 if res.status_code == 200:
                     data = res.json()
@@ -208,6 +209,8 @@ class VLMService:
                     return f"Ollama returned HTTP {res.status_code}: {res.text}"
         except httpx.ConnectError:
             return self._grounded_fallback(prompt, images)
+        except httpx.TimeoutException:
+            return "Ollama inference timed out while loading the model into GPU/RAM. Please try asking again now that the model has finished loading."
         except Exception as e:
             return f"Error contacting Ollama VLM at {url}: {str(e)}"
 
@@ -252,7 +255,7 @@ class VLMService:
         }
 
         try:
-            async with httpx.AsyncClient(timeout=45.0) as client:
+            async with httpx.AsyncClient(timeout=180.0) as client:
                 res = await client.post(url, headers=headers, json=payload)
                 if res.status_code == 200:
                     data = res.json()
@@ -264,6 +267,8 @@ class VLMService:
                     return f"VLM returned HTTP {res.status_code}: {res.text}"
         except httpx.ConnectError:
             return self._grounded_fallback(prompt, images)
+        except httpx.TimeoutException:
+            return "Model inference timed out while loading into memory. Please try asking again now that it is loaded."
         except Exception as e:
             return f"Error connecting to VLM endpoint: {str(e)}"
 
