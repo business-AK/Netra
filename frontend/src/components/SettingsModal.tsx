@@ -16,7 +16,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   currentSettings,
 }) => {
   const [provider, setProvider] = useState(currentSettings.provider || 'ollama');
-  const [model, setModel] = useState(currentSettings.model || 'qwen2.5-vl:7b');
+  const [model, setModel] = useState(currentSettings.model || 'hf.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive:Q4_K_M');
   const [baseUrl, setBaseUrl] = useState(currentSettings.baseUrl || 'http://localhost:11434');
   const [apiKey, setApiKey] = useState(currentSettings.apiKey || '');
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -24,7 +24,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setProvider(currentSettings.provider || 'ollama');
-      setModel(currentSettings.model || 'qwen2.5-vl:7b');
+      setModel(currentSettings.model || 'hf.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive:Q4_K_M');
       setBaseUrl(currentSettings.baseUrl || 'http://localhost:11434');
       setApiKey(currentSettings.apiKey || '');
       setSavedSuccess(false);
@@ -36,7 +36,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const handleProviderChange = (p: string) => {
     setProvider(p);
     if (p === 'ollama') {
-      setModel('qwen2.5-vl:7b');
+      setModel('hf.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive:Q4_K_M');
       setBaseUrl('http://localhost:11434');
     } else if (p === 'gemini') {
       setModel('gemini-2.0-flash');
@@ -127,7 +127,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               type="text"
               value={model}
               onChange={(e) => setModel(e.target.value)}
-              placeholder="e.g. qwen2.5-vl:7b, gemini-2.0-flash, llama-3.2-11b-vision-preview"
+              placeholder="e.g. hf.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive:Q4_K_M, gemini-2.0-flash, llama-3.2-11b-vision-preview"
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
               required
             />

@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Film, Clock, Trash2, ArrowRight, Sparkles, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
 import { VideoItem, VideoStatus } from '../types/video';
+import { VLMSettings } from '../types/chat';
 import { VideoUploader } from '../components/VideoUploader';
 import { ProcessingStatus } from '../components/ProcessingStatus';
 import { useVideoStatus } from '../hooks/useVideoStatus';
 
 interface HomeProps {
   onSelectVideo: (videoId: string) => void;
+  vlmSettings?: VLMSettings;
 }
 
-export const Home: React.FC<HomeProps> = ({ onSelectVideo }) => {
+export const Home: React.FC<HomeProps> = ({ onSelectVideo, vlmSettings }) => {
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [activeProcessingId, setActiveProcessingId] = useState<string | null>(null);
   const [isLoadingVideos, setIsLoadingVideos] = useState<boolean>(true);
@@ -106,7 +108,10 @@ export const Home: React.FC<HomeProps> = ({ onSelectVideo }) => {
             )}
           </div>
         ) : (
-          <VideoUploader onUploadSuccess={handleUploadSuccess} />
+          <VideoUploader
+            onUploadSuccess={handleUploadSuccess}
+            defaultFps={vlmSettings?.samplingFps}
+          />
         )}
       </div>
 

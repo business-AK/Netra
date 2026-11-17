@@ -5,13 +5,15 @@ import { VideoStatus } from '../types/video';
 
 interface VideoUploaderProps {
   onUploadSuccess: (status: VideoStatus) => void;
+  defaultFps?: number;
 }
 
-export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess }) => {
+export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess, defaultFps = 1.0 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fps, setFps] = useState<number>(defaultFps);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const supportedFormats = ['MP4', 'MKV', 'MOV', 'AVI', 'WEBM'];
@@ -54,7 +56,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess })
     setUploadProgress(0);
 
     try {
-      const result = await api.uploadVideo(file, (progressEvent) => {
+      const result = await api.uploadVideo(file, fps, (progressEvent) => {
         if (progressEvent.total) {
           const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setUploadProgress(percent);
@@ -125,7 +127,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess })
                 Netra will extract frames, generate visual embeddings, transcribe spoken audio, and build multimodal search indexes.
               </p>
 
-              <div className="flex flex-wrap items-center justify-center gap-1.5">
+              <div className="flex flex-wrap items-center justify-center gap-1.5 mb-4">
                 {supportedFormats.map((fmt) => (
                   <span
                     key={fmt}
@@ -133,6 +135,28 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess })
                   >
                     {fmt}
                   </span>
+                ))}
+              </div>
+
+              {/* Hardware Sampling FPS Selector */}
+              <div
+                className="flex flex-wrap items-center justify-center gap-2 pt-3 border-t border-slate-800/80 text-xs text-slate-400"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <span className="text-[11px] font-medium text-slate-400">Sampling Rate:</span>
+                {[0.5, 1.0, 2.0].map((rate) => (
+                  <button
+                    key={rate}
+                    type="button"
+                    onClick={() => setFps(rate)}
+                    className={`px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${
+                      fps === rate
+                        ? 'bg-indigo-600/30 border-indigo-500 text-indigo-200 shadow-sm'
+                        : 'bg-slate-800/60 border-slate-700/60 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                    }`}
+                  >
+                    {rate} FPS {rate === 0.5 ? '(Eco / Low VRAM)' : rate === 1.0 ? '(Standard)' : '(Dense)'}
+                  </button>
                 ))}
               </div>
             </>

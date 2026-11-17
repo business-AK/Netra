@@ -31,7 +31,7 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({ evidence, onSeek }) 
           />
           <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-md flex items-center gap-1 text-[10px] text-cyan-300 font-medium border border-cyan-500/30">
             <Eye className="w-2.5 h-2.5" />
-            <span>Frame</span>
+            <span>{v.badge || 'Frame'}</span>
           </div>
           {v.similarity && (
             <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-[10px] text-indigo-300 font-mono border border-indigo-500/30">

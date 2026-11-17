@@ -7,9 +7,12 @@ import { VLMSettings } from './types/chat';
 
 const DEFAULT_VLM_SETTINGS: VLMSettings = {
   provider: 'ollama',
-  model: 'qwen2.5-vl:7b',
+  model: 'hf.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive:Q4_K_M',
   baseUrl: 'http://localhost:11434',
   apiKey: '',
+  summaryN: 5,
+  topK: 6,
+  samplingFps: 1.0,
 };
 
 export function App() {
@@ -53,6 +56,7 @@ export function App() {
           />
         ) : (
           <Home
+            vlmSettings={vlmSettings}
             onSelectVideo={(id) => {
               setActiveVideoId(id);
             }}

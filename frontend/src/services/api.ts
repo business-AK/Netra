@@ -4,14 +4,21 @@ import { ChatResponseData, VLMSettings } from '../types/chat';
 
 const client = axios.create({
   baseURL: '',
-  timeout: 180000, // 3 minutes timeout for cold-loading large 7B-11B models into GPU/RAM
+  timeout: 300000, // 5 minutes timeout for cold-loading large 7B-11B models into GPU/RAM
 });
 
 export const api = {
   // Video Management
-  uploadVideo: async (file: File, onUploadProgress?: (progressEvent: any) => void): Promise<VideoStatus> => {
+  uploadVideo: async (
+    file: File,
+    fps?: number,
+    onUploadProgress?: (progressEvent: any) => void
+  ): Promise<VideoStatus> => {
     const formData = new FormData();
     formData.append('file', file);
+    if (fps !== undefined && fps > 0) {
+      formData.append('fps', fps.toString());
+    }
     const response = await client.post<VideoStatus>('/api/videos/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress,
@@ -64,6 +71,8 @@ export const api = {
       if (vlmSettings.model) payload.vlm_model = vlmSettings.model;
       if (vlmSettings.baseUrl) payload.vlm_base_url = vlmSettings.baseUrl;
       if (vlmSettings.apiKey) payload.api_key = vlmSettings.apiKey;
+      if (vlmSettings.summaryN) payload.summary_n = vlmSettings.summaryN;
+      if (vlmSettings.topK) payload.top_k = vlmSettings.topK;
     }
 
     const response = await client.post<ChatResponseData>(`/api/videos/${videoId}/chat`, payload);
