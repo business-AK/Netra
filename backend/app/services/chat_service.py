@@ -53,32 +53,40 @@ class ChatService:
                 for m in past_messages
             ]
 
-            # 4. Multimodal Retrieval
+            # 4. Multimodal Retrieval with Query Routing & Preprocessing
             retriever = MultimodalRetriever(video_id)
-            retrieval_output = retriever.retrieve(message_text)
+            retrieval_output = retriever.retrieve(
+                message_text,
+                duration=video.duration or 0.0
+            )
 
             visual_evidence = retrieval_output["visual_evidence"]
             audio_evidence = retrieval_output["audio_evidence"]
+            strategy = retrieval_output.get("strategy", "SEMANTIC_SEARCH")
 
             # 5. Build Evidence List for Output
             evidence_items = []
             for vf in visual_evidence:
-                evidence_items.append({
+                item = {
                     "type": "visual",
                     "timestamp": vf["timestamp"],
                     "frame_id": vf["frame_id"],
                     "image_url": vf["image_url"],
                     "similarity": vf.get("similarity", 0.0)
-                })
+                }
+                if vf.get("badge"):
+                    item["badge"] = vf["badge"]
+                evidence_items.append(item)
 
             for af in audio_evidence:
-                evidence_items.append({
+                item = {
                     "type": "audio",
                     "start": af["start"],
                     "end": af["end"],
                     "text": af["text"],
                     "similarity": af.get("similarity", 0.0)
-                })
+                }
+                evidence_items.append(item)
 
             # 6. Call VLM Service
             vlm = VLMService(
@@ -92,7 +100,8 @@ class ChatService:
                 query=message_text,
                 visual_evidence=visual_evidence,
                 audio_evidence=audio_evidence,
-                conversation_history=history_list
+                conversation_history=history_list,
+                strategy=strategy
             )
 
             # 7. Persist User and Assistant Messages
@@ -115,9 +124,9 @@ class ChatService:
             return {
                 "conversation_id": conv.id,
                 "answer": answer,
-                "evidence": evidence_items
+                "evidence": evidence_items,
+                "strategy": strategy
             }
 
         finally:
             db.close()
-

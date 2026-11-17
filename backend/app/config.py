@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     
     # VLM configuration
     VLM_PROVIDER: str = "ollama"  # "ollama", "openai", "custom", or "local_fallback"
-    VLM_MODEL: str = "qwen2.5-vl:7b"
+    VLM_MODEL: str = "hf.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive:Q4_K_M"
     VLM_BASE_URL: str = "http://localhost:11434"
     OPENAI_API_KEY: str = ""
     

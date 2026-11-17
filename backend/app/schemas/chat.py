@@ -30,6 +30,7 @@ class ChatResponse(BaseModel):
     conversation_id: str
     answer: str
     evidence: List[dict]
+    strategy: Optional[str] = None
 
 class MessageResponse(BaseModel):
     id: str

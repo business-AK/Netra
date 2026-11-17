@@ -222,6 +222,64 @@ class TestNetraVideoRAG(unittest.TestCase):
         print(f"\nGrounded Chat Answer:\n{response['answer']}")
         print(f"Evidence items count: {len(response['evidence'])}")
 
+    def test_08b_summarization_routing_uniform_sampling(self):
+        """Test that a summary query is routed to SUMMARIZATION and spans the entire timeline."""
+        video_id = "test_pipeline_v1"
+        retriever = MultimodalRetriever(video_id)
+        res = retriever.retrieve("Please summarize this whole video for me")
+        
+        self.assertEqual(res["strategy"], "SUMMARIZATION")
+        self.assertGreater(len(res["visual_evidence"]), 1)
+        
+        # Verify timeline coverage: first frame is near 0s, last frame is near the end (>= 6s)
+        first_ts = res["visual_evidence"][0]["timestamp"]
+        last_ts = res["visual_evidence"][-1]["timestamp"]
+        print(f"\nSummary Timeline Span: {first_ts}s -> {last_ts}s across {len(res['visual_evidence'])} frames")
+        self.assertLessEqual(first_ts, 1.0, "Summary must include the start of the video")
+        self.assertGreaterEqual(last_ts, 6.0, "Summary must include the end of the video")
+
+    def test_08c_temporal_target_routing_and_retrieval(self):
+        """Test that relative position queries ('at the end') target the end of the video."""
+        video_id = "test_pipeline_v1"
+        retriever = MultimodalRetriever(video_id)
+        res = retriever.retrieve("What happens at the end of the video?")
+        
+        self.assertEqual(res["strategy"], "TEMPORAL_TARGET")
+        self.assertGreater(len(res["visual_evidence"]), 0)
+        
+        # Verify that all returned frames are near the end (>= 4.0s)
+        for f in res["visual_evidence"]:
+            self.assertGreaterEqual(f["timestamp"], 3.5, "End-of-video query must return frames from the end")
+
+    def test_08d_generic_qa_routing_and_retrieval(self):
+        """Test that generic non-video questions route to GENERIC_QA and return zero false-positive evidence."""
+        from app.services.query_router import QueryRouter
+        
+        # Test routing for generic queries
+        r1 = QueryRouter.route("What is a coding editor?")
+        self.assertEqual(r1["strategy"], "GENERIC_QA")
+        
+        r2 = QueryRouter.route("How to detect cancer symptoms?")
+        self.assertEqual(r2["strategy"], "GENERIC_QA")
+        
+        r3 = QueryRouter.route("Write a python function to reverse a string")
+        self.assertEqual(r3["strategy"], "GENERIC_QA")
+
+        # Verify video queries are NOT misclassified as generic QA
+        r4 = QueryRouter.route("What color shirt is the boy wearing?")
+        self.assertEqual(r4["strategy"], "SEMANTIC_SEARCH")
+        
+        r5 = QueryRouter.route("Is there a red car in this scene?")
+        self.assertEqual(r5["strategy"], "SEMANTIC_SEARCH")
+
+        # Test retriever output for generic QA: empty evidence to avoid false positives
+        video_id = "test_pipeline_v1"
+        retriever = MultimodalRetriever(video_id)
+        res = retriever.retrieve("What is a coding editor?")
+        self.assertEqual(res["strategy"], "GENERIC_QA")
+        self.assertEqual(len(res["visual_evidence"]), 0)
+        self.assertEqual(len(res["audio_evidence"]), 0)
+
     def test_09_video_deletion_cleanup(self):
         """Test video deletion cleans up database and all filesystem artifacts."""
         video_id = "test_pipeline_v1"
